@@ -10,12 +10,14 @@ import {
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import { DateRangePicker } from "react-date-range";
+import { useRouter } from "next/router";
 
-function Header() {
+function Header({ placeholder }) {
   const [searchInput, setInput] = useState("");
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [noOfGuests, setNoOfGuests] = useState(1);
+  const router = useRouter();
   const handleSelect = (ranges) => {
     setStartDate(ranges.selection.startDate);
     setEndDate(ranges.selection.endDate);
@@ -27,6 +29,20 @@ function Header() {
     key: "selection",
   };
 
+  const search = (e) => {
+    router.push({
+      pathname: "/Search",
+      query: {
+        location: searchInput,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        noOfGuests,
+      },
+    });
+  };
+
+  console.log(startDate);
+
   const resetInput = () => {
     setInput("");
   };
@@ -34,7 +50,10 @@ function Header() {
   return (
     <header className="sticky top-0 z-50 grid grid-cols-3  justify-between bg-white shadow-md py-5 px-5 md:px-10">
       {/* left */}
-      <div className="relative h-10 flex items-center  cursor-pointer my-auto">
+      <div
+        onClick={() => router.push("/")}
+        className="relative h-10 flex items-center  cursor-pointer my-auto"
+      >
         <Image
           src="/images/airbnb-logo.png"
           alt="Airbnb Logo"
@@ -49,11 +68,11 @@ function Header() {
           value={searchInput}
           onChange={(e) => setInput(e.target.value)}
           type="text"
-          placeholder="Start your search"
+          placeholder={placeholder || "Start your search"}
           className="outline-none flex-grow bg-transparent text-sm text-gray-600 px-2"
         />
 
-        <div className="hidden md:flex">
+        <div className="hidden md:flex ">
           <SearchIcon className="h-8  text-white bg-red-500 rounded-full p-2 cursor-pointer " />
         </div>
       </div>
@@ -96,7 +115,9 @@ function Header() {
             <button onClick={resetInput} className="flex-grow text-gray-400">
               Cancel
             </button>
-            <button className="flex-grow text-red-400">Search</button>
+            <button onClick={search} className="flex-grow text-red-400">
+              Search
+            </button>
           </div>
         </div>
       )}
